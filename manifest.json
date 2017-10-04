@@ -1,0 +1,28 @@
+{
+  "name": "Zoho Assist",
+  "author": {
+    "name": "Zoho Assist",
+    "email": "support@zohoassist.com",
+    "url": "https://assist.zoho.com"
+  },
+  "defaultLocale": "en",
+  "private": false,
+  "location": {
+    "support": {
+      "ticket_sidebar": "assets/html/iframe.html"
+    }
+  },
+  "version": "1.0",
+  "frameworkVersion": "2.0",
+  "parameters": [
+    {
+      "name": "api_key",
+      "type": "text",
+      "required": true
+    },
+    {
+      "name": "is_eu",
+      "type": "checkbox"
+    }
+  ]
+}

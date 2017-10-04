@@ -1,0 +1,194 @@
+input,p,div,span,button{
+    font-family: Lato;
+}
+
+table{
+    background-color: transparent;
+    width: 100%;
+}
+
+th,td{
+    padding: 0;
+}
+
+*, *::after, *::before{
+    box-sizing: border-box;;
+}
+
+th{
+    text-align: center;
+    font-weight: 400 !important;
+}
+
+.data {
+    color: #363;
+    padding-left: 6px;
+}
+.start-btn{
+ background-color: #2682ea;
+ border:none;
+ border-radius: 2px;    
+ color: #fff;    
+ display: block;    
+ font-size: 13px;    
+ padding: 0 20px;    
+ transition: border-color .15s ease-in-out 0s,box-shadow .15s ease-in-out 0s;    
+ height: 36px;      
+ position: relative;
+ margin: 15px auto 0;
+ outline:none;
+}
+
+.daterangepicker .applybtn
+{
+    font-size: 12px;
+    line-height: 1.5;
+    padding: 5px 10px;
+    background-color: #1f8dd6;
+    border: 1px solid #1f8dd6;
+    border-radius: 2px;
+    color: #fff;
+    margin-right: 2px;
+}
+
+.daterangepicker .applybtn:disabled 
+{
+    cursor: not-allowed;
+    opacity: .5;
+}
+
+.daterangepicker .cancelbtn
+{
+    background-color: #fff;
+    border: 1px solid #1f8dd6;
+    color: #1f8dd6;
+}
+.preloader{
+    margin-top: 25px;
+    width: 35px;
+    height: 35px;
+    display: inline-block;
+    padding: 0px;
+    border-radius: 100%;
+    border: 2px solid;
+    border-top-color: #f22927;
+    border-bottom-color: #feea4b;
+    border-left-color: #48ca32;
+    border-right-color: #2e7eae;
+    -webkit-animation: preloader 0.7s linear infinite;
+    animation: preloader 0.7s linear infinite;
+    animation-name: preloader;
+    animation-duration: 0.7s;
+    animation-timing-function: linear;
+    animation-delay: initial;
+    animation-iteration-count: infinite;
+    animation-direction: initial;
+    animation-fill-mode: initial;
+    animation-play-state: initial;
+}
+
+@keyframes preloader{
+    from {transform: rotate(0deg);}
+    to {transform: rotate(360deg);}
+}
+
+@-webkit-keyframes preloader{
+    from {-webkit-transform: rotate(0deg);}
+    to {-webkit-transform: rotate(360deg);}
+}
+
+#content{
+    text-align: center;
+    margin: 25px 0;
+}
+
+#TheForm{
+    margin: 0;
+}
+#content .para-one{
+    line-height: 24px;
+}
+
+#content .para-two{
+    margin-bottom: 15px !important;
+    color: #999;
+}
+
+#content .join-text-box{
+    padding: 15px 8px;
+    margin: 10px 0 0;
+}
+
+#content .copy-join-url-btn{
+     background-color: #2682ea;
+     border:none;
+     border-radius: 2px;    
+     color: #fff; 
+     font-size: 13px;    
+     padding: 0 10px;    
+     transition: border-color .15s ease-in-out 0s,box-shadow .15s ease-in-out 0s;    
+     height: 32px;      
+     position: relative;
+     outline:none;
+     margin: 10px 0 0;
+}
+
+.user-content-center{
+    margin: 15%;
+}
+
+#tech-admin{
+    border: 1px solid #ddd;
+    width:720px;
+}
+
+#tech-admin thead{
+    font-size: 14px;
+    color:#333;
+    text-align: center;
+    background-color: #f7f7f7;
+}
+
+.border-bottom,#tech-admin thead{
+    border-bottom: 1px solid #ddd;
+}
+
+.tableheading{
+    padding: 10px 8px;
+}
+
+.border-right{
+    border-right: 1px solid #ddd;
+}
+
+.width-20{
+    width: 20%;
+}
+
+.width-16{
+    width: 16%;
+}
+
+.width-100{
+    width: 100%;
+}
+
+.font-size-13{
+    font-size: 13px;
+}
+
+.filter-label{
+    padding: 5px 10px;
+    background-color: #ededed;
+    border-bottom: 1px solid #ccc;
+    font-weight: 600;
+    font-style: italic;
+    font-size: 13px;
+}
+
+.member-email{
+    border-bottom: 2px solid #ddd;
+    text-align: left;
+    padding: 8px;
+    font-size: 14px;
+}
