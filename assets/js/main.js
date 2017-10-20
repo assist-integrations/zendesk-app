@@ -7,7 +7,8 @@ loginWindow=undefined,
 interval=undefined,
 api_key=null,
 is_eu=false,
-domain="com";
+domain="com",
+type="rs";
 $(function() {
     var client = ZAFClient.init();
     client.invoke('resize', { width: '100%', height: '150px' });
@@ -79,7 +80,7 @@ var handleSizingResponse = function(e) {
                 $("#content").html(html);
                 return;
             }
-            if(ZAT_DETAILS.user.license_type==="FREE"){
+            if(ZAT_DETAILS.user.remote_support_license.edition === "FREE"){
                 var context = {p1: "Upgrade your Zoho Assist pricing plan to enjoy Zendesk services.", p2: ""};
                 var html    = template(context);
                 $("#content").html(html+"<input type=\"button\" class=\"start-btn\" value=\"Upgrade\" onclick=\"openPage('https://www.zoho.com/assist/pricing.html')\" />");
@@ -96,21 +97,21 @@ var handleSizingResponse = function(e) {
                     if(ZAT_DETAILS.session.success!==undefined){
                         session_id=ZAT_DETAILS.session.success.representation.session_id;
                         loginWindow.location.href=ZAT_DETAILS.session.success.representation.technician_url;
+                        return;
                     }else{
                         loginWindow.close();
-                        var error=JSON.parse(ZAT_DETAILS.session.error);
-                        showError(error);
-                        if(interval!==undefined){
-                            clearInterval(interval);
-                            interval=undefined;
-                        }
-                        loginWindow=undefined;
+                        document.location.reload(true);
                     }
                     delete ZAT_DETAILS['session'];
                 }
+                var remoteOption = "";
+                if(ZAT_DETAILS.user.remote_support_license.edition === "PROFESSIONAL"){
+                    window.client.invoke('resize', { width: '100%', height: '200px' });
+                    remoteOption = "<label class=\"rs-text\"><span class=\"rs-radio\"><input type=\"radio\" name=\"remote_option\" id=\"rs_radio\" checked onclick=\"selectRemoteOption('rs');\" /></span>Access Remote Screen</label><label style=\"margin-left: 5px;\" class=\"rs-text\"><span class=\"rs-radio\"><input type=\"radio\" name=\"remote_option\" id=\"dm_radio\" onclick=\"selectRemoteOption('dm');\"/></span>Share My Screen</label><br />";
+                }
                 var context = {p1: "Start a session to get connected to your remote customers instantly.", p2: ""};
-                var html    = template(context);
-                $("#content").html(html+"<form id=\"TheForm\" name=\"TheForm\" method=\"get\" target=\"TheWindow\"></form><input type=\"button\" class=\"start-btn\" value=\"Start Session\" onclick=\"getSessionAPI()\" />");
+                var html = remoteOption + template(context) + "<div class=\"btn-section\"><form id=\"TheForm\" name=\"TheForm\" method=\"get\" target=\"TheWindow\"></form><input type=\"button\" class=\"start-btn\" id=\"start-btn\" value=\"Start Session\" onclick=\"getSessionAPI()\" /></div>";
+                $("#content").html(html);
             }
             else{
                 var context = {p1: "You do not have the permission to initiate a session.", p2: "Kindly contact your Administrator."};
@@ -151,7 +152,8 @@ function getSessionAPI(){
         mail_subject: ticket_no,
         mail_content: ticket_subject.substr(0,25),
         agent_name: technician_name,
-        department: department
+        department: department,
+        type: type
     };
     var session_details={
         session: data
@@ -173,6 +175,7 @@ function openLoginPage(){
         }
     },2000);
 }
+
 function showError(data) {
     var error_data = {p1: "Error Code:"+data.error.code,p2: "Error Message:"+data.error.message};
     var source   = $("#messages").html();
@@ -185,4 +188,14 @@ var copyClipboard = function(client){
     clipboard.on('success', function(e) {
         client.invoke('notify',"Copied to Clipboard",'alert');
     });
+}
+
+function selectRemoteOption(option){
+    if(option==='dm'){
+        type='dm';
+        $("#para-one").html("Start a session to share your computer screen for demo or training.");
+    }else if(option==='rs'){
+        type='rs';
+        $("#para-one").html("Start a session to get connected to your remote customers instantly.");
+    }
 }
