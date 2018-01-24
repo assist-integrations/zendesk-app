@@ -1,14 +1,19 @@
-var email=null,name=null,ticket_no=null,ticket_subject=null
-technician_name=null,
-subdomain=null;
-department=null,
-ZAT_DETAILS={},
-loginWindow=undefined,
-interval=undefined,
-api_key=null,
-is_eu=false,
-domain="com",
-type="rs";
+var email           =   null,
+    name            =   null,
+    ticket_no       =   null,
+    ticket_subject  =   null,
+    technician_name =   null,
+    subdomain       =   document.domain.replace('.zendesk.com','');
+    department      =   null,
+    ZAT_DETAILS     =   {},
+    loginWindow     =   undefined,
+    interval        =   undefined,
+    api_key         =   null,
+    is_eu           =   false,
+    domain          =   "com",
+    type            =   "rs";
+    app_identity    =   "53b53ffdc6ef6c2f391e1aa3191f7efb3338bb8e",
+    server_name     =   "https://assist.zoho.";
 $(function() {
     var client = ZAFClient.init();
     client.invoke('resize', { width: '100%', height: '150px' });
@@ -22,7 +27,9 @@ $(function() {
         if(is_eu){
             domain = "eu";
         }
-        iframeVar.src="https://assist.zoho."+domain+"/assist-integration?service_name=Zendesk";
+        server_name     += domain;
+        console.log(server_name);
+        iframeVar.src   =server_name+"/assist-integration?service_name=Zendesk&app_identity="+app_identity;
     });
 });
 function initializeVariables(client) {
@@ -73,24 +80,30 @@ var handleSizingResponse = function(e) {
     var source   = $("#messages").html();
     var template = Handlebars.compile(source);
     if(ZAT_DETAILS.signedIn){
-        if(ZAT_DETAILS.api_key===api_key){
-            if(ZAT_DETAILS.subdomain!==subdomain){
-                var context = {p1: "Your subdomain mismatches. Your API key is registered with '"+ZAT_DETAILS.subdomain+"' subdomain.", p2: ""};
-                var html    = template(context);
-                $("#content").html(html);
-                return;
-            }
+        console.log(ZAT_DETAILS);
+        if(ZAT_DETAILS.installed_app_detail.installed_app_details!=undefined){
             if(ZAT_DETAILS.user.remote_support_license.edition === "FREE"){
                 var context = {p1: "Upgrade your Zoho Assist pricing plan to enjoy Zendesk services.", p2: ""};
                 var html    = template(context);
                 $("#content").html(html+"<input type=\"button\" class=\"start-btn\" value=\"Upgrade\" onclick=\"openPage('https://www.zoho.com/assist/pricing.html')\" />");
                 return;
             }
-            if(!ZAT_DETAILS.enabled){
+            if(!ZAT_DETAILS.installed_app_detail.installed_app_details.enabled){
                 var context = {p1: "Integration with Zendesk has been disabled.", p2: "Kindly contact your Administrator."};
                 var html    = template(context);
                 $("#content").html(html);
                 return;
+            }
+            if(ZAT_DETAILS.installed_app_detail.installed_app_auth_details.subdomain!==subdomain){
+                var context = {p1: "Your subdomain mismatches. Your API key is registered with '"+ZAT_DETAILS.subdomain+"' subdomain.", p2: ""};
+                var html    = template(context);
+                $("#content").html(html);
+                return;
+            }
+            if(ZAT_DETAILS.issue_details==undefined){
+                getSessionDetailsFromIssue();
+            }else{
+                console.log(ZAT_DETAILS.issue_details);
             }
             if(ZAT_DETAILS.user.remote_support_license.is_enabled){
                 if(ZAT_DETAILS.session!==undefined){
@@ -104,6 +117,7 @@ var handleSizingResponse = function(e) {
                     }
                     delete ZAT_DETAILS['session'];
                 }
+                
                 var remoteOption = "";
                 if(ZAT_DETAILS.user.remote_support_license.edition === "PROFESSIONAL"){
                     window.client.invoke('resize', { width: '100%', height: '200px' });
@@ -121,7 +135,7 @@ var handleSizingResponse = function(e) {
         }else{
             var context = {p1: "You're not part of Zoho Assist account that enables this integration.", p2: "Kindly contact your Administrator."};
             var html    = template(context);
-            $("#content").html(html);
+            $("#content").html(html+"<input type=\"button\" class=\"start-btn\" value=\"Install Now\" onclick=\"openInstallationPage()\" />");
         }
     }
     else{
@@ -146,13 +160,11 @@ function refreshIFrame(){
 function getSessionAPI(){
     var iframeVar=document.getElementById("assist-integration-iframe");
     var data={
-        service_id: 'Zendesk',
+        app_identity: app_identity,
         customer_email: email,
         customer_name: name,
-        mail_subject: ticket_no,
-        mail_content: ticket_subject.substr(0,25),
-        agent_name: technician_name,
-        department: department,
+        issue_id: ticket_no,
+        issue_topic: ticket_subject.substr(0,175),
         type: type
     };
     var session_details={
@@ -161,8 +173,56 @@ function getSessionAPI(){
     iframeVar.contentWindow.postMessage(session_details,'*');
     loginWindow= window.open("","_blank");
 }
+
+function getAppDetailsFromIdentity(){
+    var iframeVar=document.getElementById("assist-integration-iframe");
+    var app_details     ={
+        app_identity    : app_identity
+    };
+    iframeVar.contentWindow.postMessage(app_details,'*');
+    loginWindow= window.open("","_blank");
+}
+
+// function parseSessionDetailsForIssue(sessionDetail){
+//     if(sessionDetail.success!=undefined){
+//         var response = sessionDetail.success.representation;
+//         for(response.length>0){
+//             var session = response.session_details;
+//             var agent = response.agent_details;
+//             var viewer = response.viewer_details;
+//         }
+//     }
+// }
+
+function getSessionDetailsFromIssue(){
+    var iframeVar=document.getElementById("assist-integration-iframe");
+    var data={
+        issue_id: ticket_no,
+        app_identity: app_identity
+    };
+    var session_details={
+        issue_details: data
+    };
+    iframeVar.contentWindow.postMessage(session_details,'*');
+}
+
 function openLoginPage(){
-    loginWindow = window.open("https://assist.zoho."+domain+"/html/blank.html","_blank","toolbar=yes,scrollbars=yes,resizable=yes,top=150,left=350,width=800,height=600");
+    loginWindow = window.open(server_name+"/html/blank.html","_blank","toolbar=yes,scrollbars=yes,resizable=yes,top=150,left=350,width=800,height=600");
+    if(interval!==undefined){
+        clearInterval(interval);
+        interval=undefined;
+    }
+    interval = setInterval(function(){
+        if(loginWindow.closed){
+            clearInterval(interval);
+            loginWindow=undefined;
+            document.location.reload(true);
+        }
+    },2000);
+}
+
+function openInstallationPage(){
+    loginWindow = window.open(server_name+"/oauthTwo/redirection?app_identity="+app_identity+"&subdomain="+subdomain,"_blank","toolbar=yes,scrollbars=yes,resizable=yes,top=150,left=350,width=800,height=600");
     if(interval!==undefined){
         clearInterval(interval);
         interval=undefined;

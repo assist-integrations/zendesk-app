@@ -16,11 +16,6 @@
   "frameworkVersion": "2.0",
   "parameters": [
     {
-      "name": "api_key",
-      "type": "text",
-      "required": true
-    },
-    {
       "name": "is_eu",
       "type": "checkbox"
     }
