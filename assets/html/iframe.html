@@ -15,11 +15,37 @@
     {{p2}}
     </span>
   </script>
+  <script id="assist_issue_mapping_reports" type="text/x-handlebars-template">
+      <table class="assist_report_table">
+        <thead>
+          <tr>
+            <th>Session Key</td>
+            <th>Time & Duration</td>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each this}}
+              <tr>
+                <td>{{session_key}}</td>
+                <td>
+                  <span>{{created_time}}</span><br />
+                  <span style="font-size:12px;font-style: italic;">{{duration}}</span>
+                </td>
+              </tr>
+          {{/each}}
+        </tbody>
+      </table>
+
+  </script>
   <script src="https://cdn.jsdelivr.net/jquery/3.0.0/jquery.min.js"></script>
   <script type="text/javascript" src="https://assets.zendesk.com/apps/sdk/2.0/zaf_sdk.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
   <script type="text/javascript" src="../js/main.js"></script>
   <div id="content"><div class="preloader"></div></div>
+  <div id="session_issue_reports" onclick="handleSessionReports();">
+    <img id="report_flag_img" class="reportMinimizeImage" src="../images/dropdownarrow.png" heigh="10px" width="10px" />
+    <span id="previous_session_flag">Previous Sessions</span>
+  </div>
   <div id="mapping_details"></div>
   <iframe id="assist-integration-iframe" width="0%" height="0%" style="border:0px;">
   </iframe>

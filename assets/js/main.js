@@ -13,7 +13,8 @@ var email           =   null,
     domain          =   "com",
     type            =   "rs";
     app_identity    =   "53b53ffdc6ef6c2f391e1aa3191f7efb3338bb8e",
-    server_name     =   "https://assist.zoho.";
+    server_name     =   "https://assist.zoho.",
+    show_reports_flag    =   true;
 $(function() {
     var client = ZAFClient.init();
     client.invoke('resize', { width: '100%', height: '150px' });
@@ -28,7 +29,6 @@ $(function() {
             domain = "eu";
         }
         server_name     += domain;
-        console.log(server_name);
         iframeVar.src   =server_name+"/assist-integration?service_name=Zendesk&app_identity="+app_identity;
     });
 });
@@ -100,11 +100,6 @@ var handleSizingResponse = function(e) {
                 $("#content").html(html);
                 return;
             }
-            if(ZAT_DETAILS.issue_details==undefined){
-                getSessionDetailsFromIssue();
-            }else{
-                console.log(ZAT_DETAILS.issue_details);
-            }
             if(ZAT_DETAILS.user.remote_support_license.is_enabled){
                 if(ZAT_DETAILS.session!==undefined){
                     if(ZAT_DETAILS.session.success!==undefined){
@@ -131,6 +126,11 @@ var handleSizingResponse = function(e) {
                 var context = {p1: "You do not have the permission to initiate a session.", p2: "Kindly contact your Administrator."};
                 var html    = template(context);
                 $("#content").html(html);
+            }
+            if(ZAT_DETAILS.issue_details==undefined){
+                getSessionDetailsFromIssue();
+            }else{
+                sessionIssueReportsHandling(ZAT_DETAILS.issue_details);
             }
         }else{
             var context = {p1: "You're not part of Zoho Assist account that enables this integration.", p2: "Kindly contact your Administrator."};
@@ -183,16 +183,48 @@ function getAppDetailsFromIdentity(){
     loginWindow= window.open("","_blank");
 }
 
-// function parseSessionDetailsForIssue(sessionDetail){
-//     if(sessionDetail.success!=undefined){
-//         var response = sessionDetail.success.representation;
-//         for(response.length>0){
-//             var session = response.session_details;
-//             var agent = response.agent_details;
-//             var viewer = response.viewer_details;
-//         }
-//     }
-// }
+function handleSessionReports(){
+    if(show_reports_flag){
+        document.getElementById("mapping_details").style.display    =   "block";
+        document.getElementById("report_flag_img").classList.replace("reportMinimizeImage","reportMaximizeImage");
+        window.client.invoke('resize', { width: '100%', height: '300px' });
+    }else{
+        document.getElementById("mapping_details").style.display    =   "none";
+        document.getElementById("report_flag_img").classList.replace("reportMaximizeImage","reportMinimizeImage");
+        window.client.invoke('resize', { width: '100%', height: '200px' });
+    }
+
+    show_reports_flag   =   !show_reports_flag;
+}
+
+function sessionIssueReportsHandling(sessionDetail){
+    if(sessionDetail.success!=undefined){
+        console.log(sessionDetail);
+        var response = sessionDetail.success.representation;
+        if(response.length>0){
+            document.getElementById("session_issue_reports").style.display    =   "block";
+            var source   = $("#assist_issue_mapping_reports").html();
+            var template = Handlebars.compile(source);
+            var detailsForTemplate  =   [];
+            for(var index in response){
+                var session = response[index].session_details;
+                var agent = response[index].agent_details;
+                var viewer = response[index].viewer_details;
+
+                var issueSessionDetail  =   {
+                    created_time    :  convertTimestamp(session.created_time),
+                    session_key     :  session.key,
+                    duration        :  getDuration(session.duration)
+                };
+
+                detailsForTemplate.push(issueSessionDetail);
+            }
+            var html    = template(detailsForTemplate);
+
+            $('#mapping_details').html(html);
+        }
+    }
+}
 
 function getSessionDetailsFromIssue(){
     var iframeVar=document.getElementById("assist-integration-iframe");
@@ -258,4 +290,55 @@ function selectRemoteOption(option){
         type='rs';
         $("#para-one").html("Start a session to get connected to your remote customers instantly.");
     }
+}
+
+function getDuration(duration){
+    duration    =   Number(duration);
+    var seconds =   duration/1000;
+    if(seconds < 1){
+        return "few seconds";
+    }
+    seconds     =   Math.floor(seconds);
+    
+    var minutes =   seconds/60;
+    if(minutes < 1){
+        return seconds+" sec";
+    }
+    
+    minutes     =   Math.floor(minutes);
+    seconds  =  seconds - (60*minutes);   
+
+    var hours  =    minutes/60;
+    if(hours < 1){
+        return minutes+" min:"+seconds+" sec";
+    }
+
+    hours       =   Math.floor(hours);
+    minutes     =   minutes -   (60*hours);
+
+    return hours+" hr:"+minutes+" min:"+seconds+" sec";
+}
+
+function convertTimestamp(timestamp) {
+    var date = new Date(Number(timestamp));
+
+    var dd = date.getDate();
+
+    var month_list  =   ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+    var month   =   month_list[date.getMonth()];
+    
+    var yyyy = date.getFullYear();
+    if(dd<10){
+        dd='0'+dd;
+    } 
+
+    var hours = date.getHours() > 12 ? date.getHours() - 12 : date.getHours();
+    var am_pm = date.getHours() >= 12 ? "PM" : "AM";
+    hours = hours < 10 ? "0" + hours : hours;
+    var minutes = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+    var time = hours + ":" + minutes + " " + am_pm;
+
+    console.log(date.getTime());
+    return month +" "+dd+", "+yyyy+" "+time;
 }

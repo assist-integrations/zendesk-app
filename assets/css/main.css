@@ -1,23 +1,27 @@
-input,p,div,span,button{
+input,p,div,span,button,table{
     font-family: Lato;
 }
 
 table{
-    background-color: transparent;
     width: 100%;
 }
 
-th,td{
-    padding: 0;
+.assist_report_table td{
+    font-size: 14px;
+}
+
+.assist_report_table th,.assist_report_table td{
+    text-align: left;
+    padding: 6px;
 }
 
 *, *::after, *::before{
     box-sizing: border-box;;
 }
 
-th{
-    text-align: center;
-    font-weight: 400 !important;
+.assist_report_table thead{
+    color: #aaa;
+    font-size: 12px;
 }
 
 .data {
@@ -235,4 +239,22 @@ th{
     text-align: left;
     padding: 8px;
     font-size: 14px;
+}
+
+.reportMinimizeImage{
+    transform: rotate(270deg);
+}
+
+.imageMaximizeImage{
+    transform: rotate(0deg);
+}
+
+#session_issue_reports{
+    cursor: pointer;
+    display: none;
+}
+
+#mapping_details{
+    display:none;
+    margin-top:10px;
 }
