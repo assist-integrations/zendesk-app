@@ -74,14 +74,12 @@ function openPage(pageURL){
 
 var handleSizingResponse = function(e) { 
     ZAT_DETAILS=e.data;
-    console.log(ZAT_DETAILS);
     if(ZAT_DETAILS.signedIn===undefined){
         return;
     }
     var source   = $("#messages").html();
     var template = Handlebars.compile(source);
     if(ZAT_DETAILS.signedIn){
-        console.log(ZAT_DETAILS);
         if(ZAT_DETAILS.installed_app_detail.installed_app_details!=undefined){
             if(ZAT_DETAILS.user.remote_support_license.edition === "FREE"){
                 var context = {p1: "Upgrade your Zoho Assist pricing plan to enjoy Zendesk services.", p2: ""};
@@ -202,7 +200,6 @@ function handleSessionReports(){
 
 function sessionIssueReportsHandling(sessionDetail){
     if(sessionDetail.success!=undefined){
-        console.log(sessionDetail);
         var response = sessionDetail.success.representation;
         if(response.length>0){
             document.getElementById("session_issue_reports").style.display    =   "block";
@@ -346,6 +343,5 @@ function convertTimestamp(timestamp) {
     var minutes = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
     var time = hours + ":" + minutes + " " + am_pm;
 
-    console.log(date.getTime());
     return month +" "+dd+", "+yyyy+" "+time;
 }
