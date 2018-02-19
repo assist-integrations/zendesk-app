@@ -74,6 +74,7 @@ function openPage(pageURL){
 
 var handleSizingResponse = function(e) { 
     ZAT_DETAILS=e.data;
+    console.log(ZAT_DETAILS);
     if(ZAT_DETAILS.signedIn===undefined){
         return;
     }
@@ -115,7 +116,7 @@ var handleSizingResponse = function(e) {
                 
                 var remoteOption = "";
                 if(ZAT_DETAILS.user.remote_support_license.edition === "PROFESSIONAL"){
-                    window.client.invoke('resize', { width: '100%', height: '200px' });
+                    window.client.invoke('resize', { width: '100%', height: '210px' });
                     remoteOption = "<label class=\"rs-text\"><span class=\"rs-radio\"><input type=\"radio\" name=\"remote_option\" id=\"rs_radio\" checked onclick=\"selectRemoteOption('rs');\" /></span>Access Remote Screen</label><label style=\"margin-left: 5px;\" class=\"rs-text\"><span class=\"rs-radio\"><input type=\"radio\" name=\"remote_option\" id=\"dm_radio\" onclick=\"selectRemoteOption('dm');\"/></span>Share My Screen</label><br />";
                 }
                 var context = {p1: "Start a session to get connected to your remote customers instantly.", p2: ""};
@@ -186,12 +187,14 @@ function getAppDetailsFromIdentity(){
 function handleSessionReports(){
     if(show_reports_flag){
         document.getElementById("mapping_details").style.display    =   "block";
-        document.getElementById("report_flag_img").classList.replace("reportMinimizeImage","reportMaximizeImage");
+        document.getElementById("report_flag_img").classList.remove("reportMinimizeImage");
+        document.getElementById("report_flag_img").classList.add("reportMaximizeImage");
         window.client.invoke('resize', { width: '100%', height: '300px' });
     }else{
         document.getElementById("mapping_details").style.display    =   "none";
-        document.getElementById("report_flag_img").classList.replace("reportMaximizeImage","reportMinimizeImage");
-        window.client.invoke('resize', { width: '100%', height: '200px' });
+        document.getElementById("report_flag_img").classList.add("reportMinimizeImage");
+        document.getElementById("report_flag_img").classList.remove("reportMaximizeImage");
+        window.client.invoke('resize', { width: '100%', height: '210px' });
     }
 
     show_reports_flag   =   !show_reports_flag;
@@ -293,6 +296,10 @@ function selectRemoteOption(option){
 }
 
 function getDuration(duration){
+    if(duration  == undefined || duration == null){
+        return "few seconds";
+    }
+
     duration    =   Number(duration);
     var seconds =   duration/1000;
     if(seconds < 1){
@@ -310,13 +317,13 @@ function getDuration(duration){
 
     var hours  =    minutes/60;
     if(hours < 1){
-        return minutes+" min:"+seconds+" sec";
+        return minutes+" min "+seconds+" sec";
     }
 
     hours       =   Math.floor(hours);
     minutes     =   minutes -   (60*hours);
 
-    return hours+" hr:"+minutes+" min:"+seconds+" sec";
+    return hours+" hr "+minutes+" min "+seconds+" sec";
 }
 
 function convertTimestamp(timestamp) {
