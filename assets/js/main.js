@@ -50,7 +50,6 @@ var handleSizingResponse = function(e) {
     if(ZAT_DETAILS.signedIn===undefined){
         return;
     }
-    console.log(ZAT_DETAILS);
     var source   = $("#messages").html();
     var template = Handlebars.compile(source);
     if(ZAT_DETAILS.signedIn){
