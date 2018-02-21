@@ -1,20 +1,18 @@
-var email           =   null,
-    name            =   null,
-    ticket_no       =   null,
-    ticket_subject  =   null,
-    technician_name =   null,
-    subdomain       =   document.domain.replace('.zendesk.com','');
-    department      =   null,
-    ZAT_DETAILS     =   {},
-    loginWindow     =   undefined,
-    interval        =   undefined,
-    api_key         =   null,
-    is_eu           =   false,
-    domain          =   "com",
-    type            =   "rs";
-    app_identity    =   "53b53ffdc6ef6c2f391e1aa3191f7efb3338bb8e",
-    server_name     =   "https://assist.zoho.",
-    show_reports_flag    =   true;
+var customer_email      =   null,
+    customer_name       =   null,
+    ticket_no           =   null,
+    ticket_subject      =   null,
+    subdomain           =   null;
+    department          =   null,
+    ZAT_DETAILS         =   {},
+    loginWindow         =   undefined,
+    interval            =   undefined,
+    is_eu               =   false,
+    domain              =   "com",
+    type                =   "rs";
+    app_identity        =   "53b53ffdc6ef6c2f391e1aa3191f7efb3338bb8e",
+    server_name         =   "https://assist.zoho.",
+    show_reports_flag   =   true;
 $(function() {
     var client = ZAFClient.init();
     client.invoke('resize', { width: '100%', height: '150px' });
@@ -22,50 +20,25 @@ $(function() {
     window.addEventListener('message', handleSizingResponse, true);
     window.client=client;
     client.metadata().then(function(metadata){
-        api_key = metadata.settings.api_key;
         is_eu = metadata.settings.is_eu;
         var iframeVar=document.getElementById("assist-integration-iframe");
         if(is_eu){
             domain = "eu";
         }
-        server_name     += domain;
-        iframeVar.src   =server_name+"/assist-integration?service_name=Zendesk&app_identity="+app_identity;
+        server_name     +=  domain;
+        iframeVar.src   =   server_name+"/assist-integration?service_name=Zendesk&app_identity="+app_identity;
     });
 });
 function initializeVariables(client) {
-    client.get('currentUser').then(function(data){
-        technician_name=data.currentUser.name;
-        if(technician_name.length>25){
-            technician_name =technician_name.substr(0,25);
-        }
-    });
     client.get('currentAccount').then(function(data){
-        department=data.currentAccount.subdomain;
-        subdomain=data.currentAccount.subdomain;
-        if(department.length>25){
-            department=department.substr(0,25);
-        }
-        department+=".zendesk.com";
+        subdomain   =   data.currentAccount.subdomain;
     });
     client.get('ticket').then(function(data){
-        email=data.ticket.requester.email;
-        name=data.ticket.requester.name;
-        ticket_no=data.ticket.id;
-        ticket_subject=data.ticket.subject;
-        if(ticket_subject.length>250){
-            ticket_subject= ticket_subject.substr(0,150)
-        }
-        if(name.length>25){
-            name=name.substr(0,25);
-        }
-        if(ticket_no.length>25){
-            ticket_no=ticket_no.substr(0,25);
-        }
+        customer_email  =   data.ticket.requester.email;
+        customer_name   =   data.ticket.requester.name;
+        ticket_no       =   data.ticket.id;
+        ticket_subject  =   data.ticket.subject.substr(0,150);
     });
-}
-
-function notify(client,msg){
-    client.invoke('notify',msg,'alert');
 }
 
 function openPage(pageURL){
@@ -77,16 +50,17 @@ var handleSizingResponse = function(e) {
     if(ZAT_DETAILS.signedIn===undefined){
         return;
     }
+    console.log(ZAT_DETAILS);
     var source   = $("#messages").html();
     var template = Handlebars.compile(source);
     if(ZAT_DETAILS.signedIn){
+        if(ZAT_DETAILS.user.remote_support_license.edition === "FREE"){
+            var context = {p1: "Upgrade your Zoho Assist pricing plan to enjoy Zendesk services.", p2: ""};
+            var html    = template(context);
+            $("#content").html(html+"<input type=\"button\" class=\"start-btn\" value=\"Upgrade\" onclick=\"openPage('https://www.zoho.com/assist/pricing.html')\" />");
+            return;
+        }
         if(ZAT_DETAILS.installed_app_detail.installed_app_details!=undefined){
-            if(ZAT_DETAILS.user.remote_support_license.edition === "FREE"){
-                var context = {p1: "Upgrade your Zoho Assist pricing plan to enjoy Zendesk services.", p2: ""};
-                var html    = template(context);
-                $("#content").html(html+"<input type=\"button\" class=\"start-btn\" value=\"Upgrade\" onclick=\"openPage('https://www.zoho.com/assist/pricing.html')\" />");
-                return;
-            }
             if(!ZAT_DETAILS.installed_app_detail.installed_app_details.enabled){
                 var context = {p1: "Integration with Zendesk has been disabled.", p2: "Kindly contact your Administrator."};
                 var html    = template(context);
@@ -132,9 +106,9 @@ var handleSizingResponse = function(e) {
                 sessionIssueReportsHandling(ZAT_DETAILS.issue_details);
             }
         }else{
-            var context = {p1: "You're not part of Zoho Assist account that enables this integration.", p2: "Kindly contact your Administrator."};
+            var context = {p1: "Looks like you haven't completed installation process.", p2: "Please Install now."};
             var html    = template(context);
-            $("#content").html(html+"<input type=\"button\" class=\"start-btn\" value=\"Install Now\" onclick=\"openInstallationPage()\" />");
+            $("#content").html(html+"<input type=\"button\" class=\"start-btn\" value=\"INSTALL\" onclick=\"openInstallationPage()\" />");
         }
     }
     else{
@@ -156,15 +130,16 @@ function refreshIFrame(){
     var iframeVar=document.getElementById("assist-integration-iframe");
     iframeVar.contentWindow.postMessage('refresh','*');
 }
+
 function getSessionAPI(){
     var iframeVar=document.getElementById("assist-integration-iframe");
     var data={
-        app_identity: app_identity,
-        customer_email: email,
-        customer_name: name,
-        issue_id: ticket_no,
-        issue_topic: ticket_subject.substr(0,175),
-        type: type
+        app_identity    :   app_identity,
+        customer_email  :   customer_email,
+        customer_name   :   customer_name,
+        issue_id        :   ticket_no,
+        issue_topic     :   ticket_subject,
+        type            :   type
     };
     var session_details={
         session: data
@@ -175,7 +150,7 @@ function getSessionAPI(){
 
 function getAppDetailsFromIdentity(){
     var iframeVar=document.getElementById("assist-integration-iframe");
-    var app_details     ={
+    var app_details     =   {
         app_identity    : app_identity
     };
     iframeVar.contentWindow.postMessage(app_details,'*');
@@ -229,40 +204,40 @@ function sessionIssueReportsHandling(sessionDetail){
 function getSessionDetailsFromIssue(){
     var iframeVar=document.getElementById("assist-integration-iframe");
     var data={
-        issue_id: ticket_no,
-        app_identity: app_identity
+        issue_id        :   ticket_no,
+        app_identity    :   app_identity
     };
-    var session_details={
-        issue_details: data
+    var session_details =   {
+        issue_details   : data
     };
     iframeVar.contentWindow.postMessage(session_details,'*');
 }
 
 function openLoginPage(){
-    loginWindow = window.open(server_name+"/html/blank.html","_blank","toolbar=yes,scrollbars=yes,resizable=yes,top=150,left=350,width=800,height=600");
-    if(interval!==undefined){
+    loginWindow     =       window.open(server_name+"/html/blank.html","_blank","toolbar=yes,scrollbars=yes,resizable=yes,top=150,left=350,width=800,height=600");
+    if(interval     !==     undefined){
         clearInterval(interval);
-        interval=undefined;
+        interval    =       undefined;
     }
-    interval = setInterval(function(){
+    interval        =       setInterval(function(){
         if(loginWindow.closed){
             clearInterval(interval);
-            loginWindow=undefined;
+            loginWindow     =   undefined;
             document.location.reload(true);
         }
     },2000);
 }
 
 function openInstallationPage(){
-    loginWindow = window.open(server_name+"/oauthTwo/redirection?app_identity="+app_identity+"&subdomain="+subdomain,"_blank","toolbar=yes,scrollbars=yes,resizable=yes,top=150,left=350,width=800,height=600");
-    if(interval!==undefined){
+    loginWindow     =       window.open(server_name+"/oauthTwo/redirection?app_identity="+app_identity+"&subdomain="+subdomain,"_blank","toolbar=yes,scrollbars=yes,resizable=yes,top=150,left=350,width=800,height=600");
+    if(interval     !==     undefined){
         clearInterval(interval);
-        interval=undefined;
+        interval    =       undefined;
     }
     interval = setInterval(function(){
         if(loginWindow.closed){
             clearInterval(interval);
-            loginWindow=undefined;
+            loginWindow     =   undefined;
             document.location.reload(true);
         }
     },2000);
@@ -275,19 +250,18 @@ function showError(data) {
     var html = template(error_data);
     $("#content").html(html);
 }
-var copyClipboard = function(client){
-    var clipboard = new Clipboard('.copy-join-url-btn');
-    clipboard.on('success', function(e) {
-        client.invoke('notify',"Copied to Clipboard",'alert');
-    });
-}
 
 function selectRemoteOption(option){
-    if(option==='dm'){
-        type='dm';
+    if(option       ===     'dm'){
+        
+        type        =       'dm';
+        
         $("#para-one").html("Start a session to share your computer screen for demo or training.");
-    }else if(option==='rs'){
-        type='rs';
+    }
+    else if(option  ===     'rs'){
+        
+        type        =       'rs';
+        
         $("#para-one").html("Start a session to get connected to your remote customers instantly.");
     }
 }
