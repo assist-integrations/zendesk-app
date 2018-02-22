@@ -67,7 +67,7 @@ var handleSizingResponse = function(e) {
                 return;
             }
             if(ZAT_DETAILS.installed_app_detail.installed_app_auth_details.subdomain!==subdomain){
-                var context = {p1: "Your subdomain mismatches. Your API key is registered with '"+ZAT_DETAILS.subdomain+"' subdomain.", p2: ""};
+                var context = {p1: "Your subdomain mismatches. Your have registered with '"+ZAT_DETAILS.subdomain+"' subdomain.", p2: ""};
                 var html    = template(context);
                 $("#content").html(html);
                 return;
