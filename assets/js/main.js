@@ -11,7 +11,7 @@ var customer_email      =   null,
     domain              =   "com",
     type                =   "rs";
     app_identity        =   "53b53ffdc6ef6c2f391e1aa3191f7efb3338bb8e",
-    server_name         =   "https://assist.zoho.",
+    server_name         =   "https://assist.localzoho.",
     show_reports_flag   =   true;
 $(function() {
     var client = ZAFClient.init();
