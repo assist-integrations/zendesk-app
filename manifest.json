@@ -16,8 +16,10 @@
   "frameworkVersion": "2.0",
   "parameters": [
     {
-      "name": "is_eu",
-      "type": "checkbox"
+      "name": "dc",
+      "type": "text",
+      "secure": false,
+      "required": true
     }
   ]
 }
