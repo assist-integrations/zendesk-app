@@ -24,11 +24,12 @@ $(function() {
         dc    = metadata.settings.dc;
         dc    = dc.replaceAll(/\s/g, '').toLowerCase();
         var iframeVar=document.getElementById("assist-integration-iframe");
-        
-        if(is_eu || dc ==='eu' || dc === 'com' || dc === 'jp' || dc === 'in'){
-            domain = dc;
+        if(is_eu){
+            domain = 'eu';
         }else if(dc === 'au'){
-            domain += ".au";
+            domain += '.au';
+        }else if (dc ==='eu' || dc === 'com' || dc === 'jp' || dc === 'in'){
+            domain = dc ;
         }
         server_name +=  domain;
         iframeVar.src   =   server_name+"/assist-integration?service_name=Zendesk&app_identity="+app_identity;
