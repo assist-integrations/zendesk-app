@@ -5,7 +5,7 @@
     "installation_instructions": "**Note:** You should have a Remote Support (Standard) edition of Zoho Assist or get started with [15-day free evaluation](https://www.zoho.com/assist/signup.html?src=Zendesk) to enable Zendesk integration. It would make you access remote desktop a lot easier right from your tickets.\n\n\n## To Configure Zendesk in Zoho Assist\n\n- Log in to [Zoho Assist](https://assist.zoho.com)\n\n- Navigate to **Settings**\n\n- In settings, goto **Integrations>Apps**\n\n- Search for Zendesk support and click **CONFIGURE**\n\n- Enter the sub-domain and click **ENABLE**\n\n- Now enter your Zendesk credentials and click **Sign In**\n\n\n## To Install Zoho Assist\n\n- Install Zoho Assist from Zendesk **Marketplace**\n\n- You can initiate a remote support session directly from the ticket",
     "name": "Zoho Assist Remote Support",
     "parameters": {
-     "dc": { "label": "Data Center", "helpText": "Enter the Data Center of your Zoho Assist account from the list: (COM, EU, IN, AU, JP).\n\n- ([Find your Data Center])(https://www.zoho.com/know-your-datacenter.html)" }
+     "dc": { "label": "Data Center", "helpText": "Kindly enter the Data Center location of your Zoho Assist account as mentioned below here:\n\n- COM / EU / IN / AU / JP \n\n- ([Find your data center](https://www.zoho.com/know-your-datacenter.html))"}
     }
   },
   "loading": "Welcome to Zoho Assist",
