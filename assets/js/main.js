@@ -8,6 +8,7 @@ var customer_email      =   null,
     loginWindow         =   undefined,
     interval            =   undefined,
     dc                  =   null,
+    is_eu               =   false,
     domain              =   "com",
     type                =   "rs";
     app_identity        =   "53b53ffdc6ef6c2f391e1aa3191f7efb3338bb8e",
@@ -24,13 +25,11 @@ $(function() {
         dc    = dc.replaceAll(/\s/g, '').toLowerCase();
         var iframeVar=document.getElementById("assist-integration-iframe");
         
-        if(dc === 'au'){
+        if(is_eu || dc ==='eu' || dc === 'com' || dc === 'jp' || dc === 'in'){
+            domain = dc;
+        }else if(dc === 'au'){
             domain += ".au";
         }
-        else if(dc ==='eu'|| dc === 'com' || dc === 'jp' || dc === 'in'){
-            domain = dc;   
-        }
-        
         server_name +=  domain;
         iframeVar.src   =   server_name+"/assist-integration?service_name=Zendesk&app_identity="+app_identity;
     });
