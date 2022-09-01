@@ -20,24 +20,19 @@ $(function() {
     window.addEventListener('message', handleSizingResponse, true);
     window.client=client;
     client.metadata().then(function(metadata){
-        var dc    = metadata.settings.is_eu;
-        if(dc){
-            is_eu = dc;
-        }else{
-            dc = metadata.settings.dc;
+        var dc    = metadata.settings.dc;
+        if(dc === null || dc === undefined){
+            dc = metadata.settings.is_eu ? 'eu' : 'com';
         }
-        if(dc!==null){
-            dc    = dc.replaceAll(/\s/g, '').toLowerCase();
-        }
-        var iframeVar=document.getElementById("assist-integration-iframe");
-        if(is_eu){
-            domain = 'eu';
-        }else if(dc === 'au'){
+        dc = dc.replaceAll(/\s/g,'').toLowerCase();
+        
+        if(dc === 'au'){
             domain += '.au';
         }else if (dc ==='eu' || dc === 'com' || dc === 'jp' || dc === 'in'){
             domain = dc ;
         }
-        server_name +=  domain;
+        server_name    +=   domain;
+        var iframeVar   =   document.getElementById("assist-integration-iframe");
         iframeVar.src   =   server_name+"/assist-integration?service_name=Zendesk&app_identity="+app_identity;
     });
 });
