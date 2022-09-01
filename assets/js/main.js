@@ -7,7 +7,6 @@ var customer_email      =   null,
     ZAT_DETAILS         =   {},
     loginWindow         =   undefined,
     interval            =   undefined,
-    dc                  =   null,
     is_eu               =   false,
     domain              =   "com",
     type                =   "rs";
@@ -21,18 +20,19 @@ $(function() {
     window.addEventListener('message', handleSizingResponse, true);
     window.client=client;
     client.metadata().then(function(metadata){
-        is_eu = metadata.settings.is_eu;
-        dc    = metadata.settings.dc;
-        dc    = dc.replaceAll(/\s/g, '').toLowerCase();
-        var iframeVar=document.getElementById("assist-integration-iframe");
-        if(is_eu){
-            domain = 'eu';
-        }else if(dc === 'au'){
+        var dc    = metadata.settings.dc;
+        if(dc === null || dc === undefined){
+            dc = metadata.settings.is_eu ? 'eu' : 'com';
+        }
+        dc = dc.replaceAll(/\s/g,'').toLowerCase();
+        
+        if(dc === 'au'){
             domain += '.au';
         }else if (dc ==='eu' || dc === 'com' || dc === 'jp' || dc === 'in'){
             domain = dc ;
         }
-        server_name +=  domain;
+        server_name    +=   domain;
+        var iframeVar   =   document.getElementById("assist-integration-iframe");
         iframeVar.src   =   server_name+"/assist-integration?service_name=Zendesk&app_identity="+app_identity;
     });
 });
