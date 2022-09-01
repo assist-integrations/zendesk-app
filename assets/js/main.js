@@ -7,7 +7,6 @@ var customer_email      =   null,
     ZAT_DETAILS         =   {},
     loginWindow         =   undefined,
     interval            =   undefined,
-    dc                  =   null,
     is_eu               =   false,
     domain              =   "com",
     type                =   "rs";
@@ -21,10 +20,13 @@ $(function() {
     window.addEventListener('message', handleSizingResponse, true);
     window.client=client;
     client.metadata().then(function(metadata){
-        is_eu = metadata.settings.is_eu;
-        dc    = metadata.settings.dc;
-        if(dc !== null)
-        {
+        var dc    = metadata.settings.is_eu;
+        if(dc){
+            is_eu = dc;
+        }else{
+            dc = metadata.settings.dc;
+        }
+        if(dc!==null){
             dc    = dc.replaceAll(/\s/g, '').toLowerCase();
         }
         var iframeVar=document.getElementById("assist-integration-iframe");
