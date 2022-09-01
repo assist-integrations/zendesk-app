@@ -23,7 +23,10 @@ $(function() {
     client.metadata().then(function(metadata){
         is_eu = metadata.settings.is_eu;
         dc    = metadata.settings.dc;
-        dc    = dc.replaceAll(/\s/g, '').toLowerCase();
+        if(dc !== null)
+        {
+            dc    = dc.replaceAll(/\s/g, '').toLowerCase();
+        }
         var iframeVar=document.getElementById("assist-integration-iframe");
         if(is_eu){
             domain = 'eu';
