@@ -26,9 +26,7 @@ $(function() {
         }
         dc = dc.replaceAll(/\s/g,'').toLowerCase();
         
-        if(dc === 'au'){
-            domain += '.au';
-        }else if (dc ==='eu' || dc === 'com' || dc === 'jp' || dc === 'in'){
+        if (dc ==='eu' || dc === 'com'){
             domain = dc ;
         }
         server_name    +=   domain;
